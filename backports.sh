@@ -28,7 +28,7 @@ for arg in "$@"; do
             echo "  -A, --all                  Merge backports for every PR by --user merged within --time"
             echo "  --user=<user>              GitHub username to look up PRs for (with -A)"
             echo "  --time=<duration>          How far back to look, e.g. 30m, 2h, 1d (with -A)"
-            echo "  --repo=<owner/repo>        Repo to look up PRs in (with -A, default: $search_repo)"
+            echo "  --repo=<owner/repo>        Repo to look up PRs in (default: $search_repo)"
             echo "  --exclude-branch=<branch>  Skip a backport, e.g. 45, f45, el10 (comma-separated or repeated)"
             echo "NOTE:     Requires gh (authenticated) and jq"
             exit 0
