@@ -77,8 +77,8 @@ while read -r link; do
     o="${BASH_REMATCH[1]}"; r="${BASH_REMATCH[2]}"; n="${BASH_REMATCH[3]}"
     tag=""; [[ -n "${branch_of[$link]:-}" ]] && tag="[${branch_of[$link]}] "
 
-    gh pr review "$n" --repo "$o/$r" --approve >/dev/null 2>&1 && a="approved" || a="approve failed"
-    gh pr merge "$n" --repo "$o/$r" --squash --auto >/dev/null 2>&1 && m="squash-merge enabled" || m="merge failed"
+    gh pr review "$n" --repo "$o/$r" --approve >/dev/null 2>&1 && a="Approved" || a="Approve failed"
+    gh pr merge "$n" --repo "$o/$r" --squash --auto >/dev/null 2>&1 && m="Merged" || m="Merge failed"
 
     echo "${tag}${link} -> $a, $m"
 done <<< "$links"
