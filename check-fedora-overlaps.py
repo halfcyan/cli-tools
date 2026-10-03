@@ -157,6 +157,7 @@ def main():
     }
     for project in sorted(matched_projects):
         print(project)
+    print()
 
     print(
         f"Checked {len(main_repo_specs)} main-repository Terra specs "
