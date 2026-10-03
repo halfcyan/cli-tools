@@ -150,16 +150,20 @@ def main():
             terra_names.setdefault(name, set()).add(spec)
 
     matches = sorted(set(terra_names) & fedora_names)
-    print("PACKAGE\tTERRA SPEC")
-    for name in matches:
-        for spec in sorted(terra_names[name]):
-            print(f"{name}\t{spec.relative_to(spec_root.parent)}")
+    matched_projects = {
+        spec.parent.relative_to(spec_root).as_posix()
+        for name in matches
+        for spec in terra_names[name]
+    }
+    for project in sorted(matched_projects):
+        print(project)
 
     print(
         f"Checked {len(main_repo_specs)} main-repository Terra specs "
         f"(excluded {excluded_subrepo_specs} subrepository specs) against "
         f"{len(fedora_names)} Fedora Rawhide package names; found "
-        f"{len(matches)} exact name matches.",
+        f"{len(matches)} exact name matches across {len(matched_projects)} "
+        "Terra project directories.",
         file=sys.stderr,
     )
     if not rpmspec:
