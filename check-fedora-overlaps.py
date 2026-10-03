@@ -9,7 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-RAW_HIDE_REPO = (
+RAWHIDE_REPO = (
     "https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/"
     "Everything/{arch}/os/"
 )
@@ -17,7 +17,7 @@ RAW_HIDE_REPO = (
 
 def query_fedora_names(dnf, arch):
     repo_id = "fedora-rawhide-overlap-check"
-    repo_url = RAW_HIDE_REPO.format(arch=arch)
+    repo_url = RAWHIDE_REPO.format(arch=arch)
 
     with tempfile.TemporaryDirectory(prefix="terra-fedora-overlaps-") as temp_dir:
         temp = Path(temp_dir)
