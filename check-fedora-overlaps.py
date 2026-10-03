@@ -13,6 +13,7 @@ RAWHIDE_REPO = (
     "https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/"
     "Everything/{arch}/os/"
 )
+SUBREPO_LABEL = re.compile(r"^\s*subrepo\s*=\s*\"[^\"]+\"\s*(?:#.*)?$", re.MULTILINE)
 
 
 def query_fedora_names(dnf, arch):
@@ -83,6 +84,15 @@ def terra_package_names(spec_path, rpmspec):
     return names, parse_failed
 
 
+def is_subrepo_package(spec_path):
+    anda_config = spec_path.parent / "anda.hcl"
+    try:
+        config = anda_config.read_text(encoding="utf-8", errors="replace")
+    except OSError as error:
+        raise RuntimeError(f"could not read {anda_config}: {error}") from error
+    return SUBREPO_LABEL.search(config) is not None
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=(
@@ -123,9 +133,17 @@ def main():
         return 1
 
     rpmspec = shutil.which("rpmspec")
+    try:
+        main_repo_specs = [spec for spec in specs if not is_subrepo_package(spec)]
+    except RuntimeError as error:
+        print(
+            f"error: could not inspect subrepository labels: {error}", file=sys.stderr
+        )
+        return 1
+    excluded_subrepo_specs = len(specs) - len(main_repo_specs)
     terra_names = {}
     parse_failures = 0
-    for spec in specs:
+    for spec in main_repo_specs:
         names, failed = terra_package_names(spec, rpmspec)
         parse_failures += failed
         for name in names:
@@ -138,8 +156,10 @@ def main():
             print(f"{name}\t{spec.relative_to(spec_root.parent)}")
 
     print(
-        f"Checked {len(specs)} Terra specs against {len(fedora_names)} Fedora "
-        f"Rawhide package names; found {len(matches)} exact name matches.",
+        f"Checked {len(main_repo_specs)} main-repository Terra specs "
+        f"(excluded {excluded_subrepo_specs} subrepository specs) against "
+        f"{len(fedora_names)} Fedora Rawhide package names; found "
+        f"{len(matches)} exact name matches.",
         file=sys.stderr,
     )
     if not rpmspec:
